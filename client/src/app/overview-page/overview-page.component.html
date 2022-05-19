@@ -1,0 +1,132 @@
+<div class="page-title">
+  <h4>
+    <a routerLink="/categories">Категории</a>
+    <i class="material-icons">keyboard_arrow_right</i>
+    {{isNew ? 'Добавить' : 'Редактировать'}}
+  </h4>
+  <span *ngIf="!isNew">
+    <button
+      class="btn btn-small red"
+      (click)="deleteOneCategory()"
+      [disabled]="form.disabled"
+    >
+      <i class="material-icons">delete</i>
+    </button>
+  </span>
+</div>
+
+<div class="row">
+  <form class="col s12 l6" [formGroup]="form" (ngSubmit)="onSubmit()">
+<!--    <div class="input-field">-->
+<!--      <input-->
+<!--        id="name"-->
+<!--        type="text"-->
+<!--        formControlName="name"-->
+<!--        [ngClass]="{'invalid': form.get('name').invalid && form.get('name').touched}"-->
+<!--      >-->
+<!--      <label for="name">Название</label>-->
+<!--      <span-->
+<!--        class="helper-text red-text"-->
+<!--        *ngIf="form.get('name').invalid && form.get('name').touched"-->
+<!--      >-->
+<!--        <span *ngIf="form.get('name').errors['required']">-->
+<!--          Имя не может быть пустым-->
+<!--        </span>-->
+<!--      </span>-->
+<!--    </div>-->
+
+<!--    <div>-->
+<!--      <input-->
+<!--        type="file"-->
+<!--        (change)="onFileSelect($event)"-->
+<!--        class="dn"-->
+<!--        #input-->
+<!--      >-->
+<!--      <button-->
+<!--        class="waves-effect waves-light btn orange lighten-2 mb2"-->
+<!--        type="button"-->
+<!--        (click)="triggerClick()"-->
+<!--        [disabled]="form.disabled"-->
+<!--      >-->
+<!--        <i class="material-icons left">backup</i>-->
+<!--        Загрузить изображение-->
+<!--      </button>-->
+<!--    </div>-->
+
+
+    <div id="drop-area">
+      <form class="my-form">
+        <p>Загрузите несколько файлов с помощью диалогового окна файла или путем перетаскивания изображений в пунктирную область.</p>
+        <input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(this.files)">
+        <label class="button" for="fileElem">Select some files</label>
+      </form>
+      <progress id="progress-bar" max=100 value=0></progress>
+      <div id="gallery" ><img id="imgprev"></div>
+    </div>
+
+    <div>
+      <button
+        class="waves-effect waves-light btn"
+        type="submit"
+        [disabled]="form.disabled"
+      >
+        Сохранить
+      </button>
+    </div>
+  </form>
+
+  <!--        [disabled]="form.invalid || form.disabled"-->
+
+<!--  <div class="col s12 l4 center">-->
+<!--    <img2-->
+<!--      class="responsive-img h20"-->
+<!--      *ngIf="imagePreview"-->
+<!--      [src]="imagePreview"-->
+<!--    >-->
+<!--  </div>-->
+</div>
+
+<app-positions-form
+  *ngIf="category?.id"
+  [categoryId]="category.id"
+></app-positions-form>
+
+<div class="row">
+  <div class="col s12">
+    <div id="newCat" class="collection">
+      <div class="center">
+        У вас нет ни одной новой категории
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row" *ngIf="categories$ | async as categories; else loader">
+  <div class="col s12">
+    <div class="collection" *ngIf="categories.length !== 0; else empty">
+      <a
+        *ngFor="let category of categories"
+        [routerLink]="['/categories', category.id]"
+
+        class="collection-item collection-item-icon"
+      >
+        <span>
+        {{category.name}}
+        </span>
+        <span>
+            <i class="material-icons" (click)="deleteCategory($event, category)">delete</i>
+        </span>
+      </a>
+    </div>
+    <ng-template #empty>
+      <div class="center">
+        У вас нет ни одной категории
+      </div>
+    </ng-template>
+  </div>
+</div>
+
+<ng-template #loader>
+  <app-loader></app-loader>
+</ng-template>
+
