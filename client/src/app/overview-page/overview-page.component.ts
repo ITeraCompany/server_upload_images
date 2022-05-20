@@ -255,7 +255,7 @@ export class OverviewPageComponent implements OnInit {
                   name: contents[contents.length-1].name,
                   path: entry.fullPath,
                   category: rootDir,
-                  imageSrc: 'http://localhost:4200/uploads/'+contents[contents.length-1].name
+                  imageSrc: document.location.origin+'/uploads/'+contents[contents.length-1].name
                 }
 
               // imageSrc: newNameFile(rootDir,contents[contents.length-1].name)
