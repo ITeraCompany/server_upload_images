@@ -25,7 +25,7 @@ app.use('/api/position/',positionsRouters)
 
 
 if (process.env.NODE_ENV === 'production') {
-    app.use(exp.static('client/dist'))
+    app.use(exp.static('client/dist/client'))
 
     app.get('*', (req, res) => {
         res.sendFile(path.resolve(__dirname, 'client', 'dist', 'client', 'index.html'))
