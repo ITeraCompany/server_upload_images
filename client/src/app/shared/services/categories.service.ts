@@ -16,11 +16,11 @@ export class CategoriesService {
     const fd = new FormData()
 
      fd.append('name',JSON.stringify(newCategories))
-    // fd.append('name', '3333test!!!')
+
 
  console.log('1cat service '+newCategories)
     return this.http.post<Category>('/api/category', fd)
-    // console.log('1cat service '+newCategories)
+
   }
 
   update(id: string, name: string, image?: File): Observable<Category> {

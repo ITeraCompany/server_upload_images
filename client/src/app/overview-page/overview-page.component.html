@@ -60,7 +60,7 @@
         <input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(this.files)">
         <label class="button" for="fileElem">Select some files</label>
       </form>
-      <progress id="progress-bar" max=100 value=0></progress>
+      <progress id="progress-bar" max=300 value=0></progress>
       <div id="gallery" ><img id="imgprev"></div>
     </div>
 
@@ -103,7 +103,7 @@
 
 <div class="row" *ngIf="categories$ | async as categories; else loader">
   <div class="col s12">
-    <div class="collection" *ngIf="categories.length !== 0; else empty">
+    <div id="Cats" class="collection" *ngIf="categories.length !== 0; else empty">
       <a
         *ngFor="let category of categories"
         [routerLink]="['/categories', category.id]"

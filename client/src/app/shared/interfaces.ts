@@ -18,6 +18,7 @@ export interface Position {
   path?: string
   imageSrc?: string
   category?: string
+  categoryName?: string
   user?: string
 }
 

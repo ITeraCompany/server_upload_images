@@ -1,5 +1,5 @@
 
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core'
+import {Component, ElementRef, OnInit, ViewChild,OnChanges,SimpleChanges} from '@angular/core'
 import {ActivatedRoute, Params, Router} from '@angular/router'
 import {FormControl, FormGroup, Validators} from '@angular/forms'
 import {CategoriesService} from '../shared/services/categories.service'
@@ -10,14 +10,26 @@ import {Category, Position} from '../shared/interfaces'
 import {PositionsService} from '../shared/services/positions.service'
 
 
-
 @Component({
   selector: 'app-overview-page',
   templateUrl: './overview-page.component.html',
   styleUrls: ['./overview-page.component.css']
 })
 
-export class OverviewPageComponent implements OnInit {
+// export class OverviewPageComponent implements OnChanges {
+//   @Input() someHtml: string;
+//
+//   constructor() {}
+//
+//   ngOnChanges() {
+//     ///** WILL TRIGGER WHEN PARENT COMPONENT UPDATES '**
+//
+//     console.log(this.someHtml);
+//   }
+//
+// }
+
+export class OverviewPageComponent implements OnInit, OnChanges {
 
   @ViewChild('input') input: ElementRef
   categories$: Observable<Category[]>
@@ -37,6 +49,15 @@ export class OverviewPageComponent implements OnInit {
               private categoriesService: CategoriesService,
               private positionsService: PositionsService,
               private router: Router) {
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    for (let propName in changes) {
+      let chng = changes[propName];
+      let cur  = JSON.stringify(chng.currentValue);
+      let prev = JSON.stringify(chng.previousValue);
+      this.log(`${propName}: currentValue = ${cur}, previousValue = ${prev}`);
+    }
   }
 
   ngOnInit() {
@@ -219,50 +240,60 @@ export class OverviewPageComponent implements OnInit {
         }
       }
 
+
+
       // return files;
     }
 
+
+    function filterFile (nameFile) {
+
+      let exp =nameFile.split('.').pop();
+
+      if (exp === 'png' || exp === 'jpeg' || exp === 'jpg')
+      {
+          return true;
+      }
+      else return false
+
+    }
 
     const show = async (entry,rootDir) => {
 
       const files: File[] = [];
       const newPositions: Position[] = []
 
-
-
-    // async function show(entry,rootDir) {
-      // console.log(entry.fullPath);
-
-
-
       if (entry.isDirectory) {
         for await (const newfiles of getEntriesAsAsyncIterator(entry))
         {
 
-          if (entry.isDirectory) console.log('dirr '+entry.fullPath);
-
           if (newfiles.isFile)
           {
-            // console.log('file '+newfiles.fullPath);
+            if (filterFile(newfiles.name)){
 
-            // const rez = await readEntryContentAsync(newfiles,entry.fullPath,rootDir);
+              await readEntryContentAsync(newfiles,entry.fullPath,rootDir).then(contents => {
 
-            await readEntryContentAsync(newfiles,entry.fullPath,rootDir).then(contents => {
-
-                files.push(...contents)
+                files.push(contents.file)
 
                 const newPosition: Position = {
-                  name: contents[contents.length-1].name,
+                  name: contents.name,
                   path: entry.fullPath,
                   category: rootDir,
-                  imageSrc: document.location.origin+'/uploads/'+contents[contents.length-1].name
+                  categoryName:rootDir,
+                  imageSrc: document.location.origin+'/uploads/'+contents.file.name
                 }
 
-              // imageSrc: newNameFile(rootDir,contents[contents.length-1].name)
+                newPositions.push(newPosition)
 
-              newPositions.push(newPosition)
+                // updateProgress(i, (e.loaded * 100.0 / e.total) || 100)
 
-            })
+
+              })
+
+
+            }
+
+
 
           }
 
@@ -280,9 +311,10 @@ export class OverviewPageComponent implements OnInit {
      return  normalizeName(rootDir)+'---'+normalizeName(name)
     }
 
-    function renameNewFile(file,rootDir){
+    function renameNewFile(file,rootDir,patchFile){
 
-      var newFile = new File([file], newNameFile(rootDir,file.name), {
+      // @ts-ignore
+      var newFile = new File([file], newNameFile(patchFile,file.name), {
         type: file.type,
       });
 
@@ -293,9 +325,9 @@ export class OverviewPageComponent implements OnInit {
     // const readEntryContentAsync = async (entry: FileSystemEntry,patchFile,rootDir) => {
 
     async function readEntryContentAsync(entry: FileSystemEntry,patchFile,rootDir) {
-      return new Promise<File[]>((resolve, reject) => {
+
+      return new Promise<{ "file": File, "name": "" }>((resolve, reject) => {
         let reading = 0;
-         const contents: File[] = [];
 
         readEntry(entry);
 
@@ -308,21 +340,27 @@ export class OverviewPageComponent implements OnInit {
             entry.file(file => {
               reading--;
 
+              const newFile =  renameNewFile(file,rootDir,patchFile)
 
-              const newFile =  renameNewFile(file,rootDir)
-              console.log(newFile);
-              // console.log('pos file '+rootDir+'    '+patchFile+' '+file.name)
-
+              const obj = { "file": File, "name": "" }
 
               if (file) {
-                contents.push(newFile);
+               // contents.push(newFile);
+
+
+
+                obj.file =  newFile
+                obj.name = file.name
+
+                // contents.push(obj);
+
               }
 
               previewFile(file,rootDir);
 
-
               if (reading === 0) {
-                resolve(contents);
+                // @ts-ignore
+                resolve(obj);
               }
             });
           }
@@ -360,7 +398,9 @@ export class OverviewPageComponent implements OnInit {
 
       const badSimvols = '/';
 
-      const nName = name.replace('/', '')
+      // const nName = name.replace('/', '')
+
+      const nName = name.split('/').join('');
 
       return nName;
 
@@ -393,14 +433,14 @@ export class OverviewPageComponent implements OnInit {
         reader.readAsDataURL(file)
         reader.onloadend = function() {
         let img = document.createElement('img')
-        img.setAttribute('height', '100px');
-        img.setAttribute('width', '100px');
+        img.setAttribute('height', '60px');
+        img.setAttribute('width', '60px');
 
         // img.classList.add("img-class")
 
         // img.setAttribute("id", "img-id")
         const Dir = (<HTMLImageElement>document.getElementById(nameDir));
-        console.log('getElementById '+nameDir)
+        // console.log('getElementById '+nameDir)
         // const imgprev = (<HTMLImageElement>document.getElementById('imgprev'));
 
         if (typeof reader.result === "string") {
@@ -724,7 +764,7 @@ export class OverviewPageComponent implements OnInit {
     let obs$
     this.form.disable()
     if (this.isNew) {
-       // console.log('1new cat !!!!!!!!!!!!!!!!!!!!!!!!'+this.newCategories)
+
       obs$ = this.categoriesService.create(this.newCategories)
       // console.log('2new cat !!!!!!!!!!!!!!!!!!!!!!!!'+this.newCategories)
 
@@ -745,11 +785,46 @@ export class OverviewPageComponent implements OnInit {
       obs$ = this.categoriesService.update(this.category.id, this.form.value.name, this.image)
     }
 
+   // const reloadelement = async  (url: string) => {
+   //
+   //    await this.router.navigateByUrl('.', { skipLocationChange: true });
+   //    return this.router.navigateByUrl(url);
+   //
+   //  }
+
+
+    const createPositions = (pushNewPositions,pushFiles) =>
+    {
+
+      return new Promise<void>((resolve, reject) => {
+      //
+      // }
+
+      // let promise = new Promise((resolve, reject) => {
+        this.positionsService.create(pushNewPositions, pushFiles).subscribe(
+          position => {
+            MaterialService.toast('Изменения сохранены % ')
+            resolve();
+          },
+          error => {
+            this.form.enable()
+            MaterialService.toast(error.error.message)
+            reject(error.error.message)
+          }
+          // completed
+        )
+      })
+    }
+
+    const pushAllFiles = async (pushNewPositions,pushFiles) =>{
+      createPositions(pushNewPositions,pushFiles)
+    }
+
     obs$.subscribe(
-      categories => {
+      async categories => {
         this.category = categories
-        console.log('new cat '+categories)
-        MaterialService.toast('Изменения сохранены')
+
+        // MaterialService.toast('Изменения сохранены')
         this.form.enable()
 
         categories.forEach(category => {
@@ -761,30 +836,127 @@ export class OverviewPageComponent implements OnInit {
             }
           });})
 
-          this.positionsService.create(this.newPositions,this.files).subscribe(
-            position => {
-              // this.positions.push(position)
-              MaterialService.toast('Изменения сохранены')
-            },
-            error => {
-              this.form.enable()
-              MaterialService.toast(error.error.message)
-            }
-            // completed
-          )
+
+        let  pushFiles: File[] = [];
+        let  pushNewPositions: Position[] = []
+        let i=0;
+
+        for await (const item of this.files) {
+
+          pushFiles.push(this.files[i])
+          pushNewPositions.push(this.newPositions[i])
+
+                this.positionsService.create(pushNewPositions, pushFiles).subscribe(
+                  position => {
+                    MaterialService.toast('Изменения сохранены % ')
+
+
+
+                    // if (i==this.files.length-1){
+                    //
+                    //     this.router.navigate(['/overview'])
+                    //                    .then(() => {
+                    //                      window.location.reload();
+                    //                    })
+                    //     }
+
+                  },
+                  error => {
+                    this.form.enable()
+                    MaterialService.toast(error.error.message)
+
+                  }
+                  // completed
+                )
+
+
+
+          // await pushAllFiles(pushNewPositions,pushFiles)
+
+          pushFiles.length =0
+          pushNewPositions.length =0
+
+          i++
+
+        }
 
 
 
 
+        // const stepDownload = 10;
+        //
+        // let  pushFiles: File[] = [];
+        // let  pushNewPositions: Position[] = [];
+        //
+        // for (let i = 0; i < this.files.length; i++) {
+        //
+        //       pushFiles.push(this.files[i])
+        //       pushNewPositions.push(this.newPositions[i])
+        //
+        //      if (i==this.files.length-1){
+        //        createPositions(pushNewPositions,pushFiles).then(
+        //
+        //            res => { // Success
+        //              this.router.navigate(['/overview'])
+        //                .then(() => {
+        //                  window.location.reload();
+        //                })
+        //            },
+        //
+        //              error => MaterialService.toast(error.error.message)
+        //
+        //
+        //        )
+        //
+        //        pushFiles.length =0
+        //        pushNewPositions.length =0
+        //
+        //      }else{
+        //
+        //          if (i%stepDownload === 0 && i!==0){
+        //
+        //            createPositions(pushNewPositions,pushFiles).then(
+        //
+        //              res => { // Success
+        //                MaterialService.toast('save ok!')
+        //              },
+        //
+        //              error => MaterialService.toast(error.error.message)
+        //
+        //            )
+        //
+        //            pushFiles.length =0
+        //            pushNewPositions.length =0
+        //
+        //          }
+        //      }
+        //
+        //
+        //
+        // }
 
       },
       error => {
         MaterialService.toast(error.error.message)
         this.form.enable()
       },
-      () => this.router.navigate(['/categories'])
+        // () => this.router.navigate(['/overview'])
+
+
+      //   () => this.router.navigate(['/overview'])
+      // .then(() => {
+      //    window.location.reload();
+      // })
+
+
     )
+
+
   }
+
+
+
+
 
   deleteOneCategory() {
     const decision = window.confirm('Вы уверены, что хотите удалить категорию?')
@@ -832,4 +1004,7 @@ export class OverviewPageComponent implements OnInit {
     this.input.nativeElement.click()
   }
 
+  private log(msg: string) {
+    console.log('!!!!!+++++++++++++++++'+msg);
+  }
 }

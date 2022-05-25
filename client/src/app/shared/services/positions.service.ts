@@ -19,18 +19,20 @@ export class PositionsService {
   // }
 
   create(positions: Position[] , files: File[]): Observable<Position> {
-    const fd = new FormData()
 
+      const fd = new FormData()
 
-    for (let i = 0; i < files.length; i++) {
-      // fd.append('image', files[i],files[i].name);
-      fd.append("uploads[]", files[i], files[i]['name']);
-      console.log(files[i].name)
-    }
+    // for (let i = 0; i < files.length; i++) {
 
-    fd.append('data', JSON.stringify(positions));
+          for (let i = 0; i < files.length; i++) {
+            fd.append("uploads[]", files[i], files[i]['name']);
+          }
 
-    return this.http.post<Position>('/api/position', fd)
+          fd.append('data', JSON.stringify(positions));
+
+          return this.http.post<Position>('/api/position', fd)
+    // }
+
   }
 
   remove(id: string): Observable<Message> {

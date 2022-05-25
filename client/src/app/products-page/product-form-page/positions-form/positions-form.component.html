@@ -15,10 +15,10 @@
         <a
           *ngFor="let position of positions"
           class="collection-item collection-item-icon"
-          
+
         >
           <span>
-            {{position.name}} <span> | </span> <a href={{position.imageSrc}} target="_blank">{{position.imageSrc}} </a>
+            {{position.name}} <span> | </span> <a href={{position.imageSrc}} target="_blank">{{position.imageSrc}} </a> | <span> {{position.path}} </span>
           </span>
           <span>
             <i class="material-icons" (click)="removePosition($event, position)">delete</i>
