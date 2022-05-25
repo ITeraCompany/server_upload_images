@@ -19,7 +19,7 @@ const User = sequelize.define('users',{
 
 const Category = sequelize.define('category',{
     id: {type: DataTypes.INTEGER,primaryKey:true,autoIncrement:true},
-    name:{type: DataTypes.STRING,unique:false,allowNull:false},
+    name:{type: DataTypes.STRING,unique:true,allowNull:false},
     squ:{type: DataTypes.STRING,allowNull:false},
     imageSrc:{type: DataTypes.STRING,defaultValue:"",allowNull:true},
     user : {type: DataTypes.STRING,allowNull:false}
@@ -27,10 +27,12 @@ const Category = sequelize.define('category',{
 
 const Position = sequelize.define('positions',{
     id: {type: DataTypes.INTEGER,primaryKey:true,autoIncrement:true},
-    name:{type: DataTypes.STRING,unique:true,allowNull:false},
+    name:{type: DataTypes.STRING,unique:false,allowNull:false},
     squ:{type: DataTypes.STRING,allowNull:false},
     imageSrc:{type: DataTypes.STRING,defaultValue:"",allowNull:true},
+    path:{type: DataTypes.STRING,defaultValue:"",allowNull:true},
     category:{type: DataTypes.STRING,allowNull:false},
+    categoryName:{type: DataTypes.STRING,unique:false,allowNull:false},
     user:{type: DataTypes.STRING,allowNull:false}
 })
 

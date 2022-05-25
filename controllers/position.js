@@ -7,8 +7,20 @@ module.exports.getAll = async function(req, res) {
         const positions = await Position.findAll({
             where: {
                 category: req.params.category
-            }
+            },
+            order: [
+                ['squ', 'ASC']]
+
         });
+        res.status(200).json(positions)
+    } catch (e) {
+        errorHandler(res, e)
+    }
+}
+
+module.exports.getImages = async function(req, res) {
+    try {
+        const positions = await Position.findAll({});
         res.status(200).json(positions)
     } catch (e) {
         errorHandler(res, e)
@@ -18,18 +30,24 @@ module.exports.getAll = async function(req, res) {
 module.exports.create = async function(req, res) {
     // try {
         // let imageSrc = req.file ? req.file.path : ''
-
+    // console.log('111111 arr '+String(arr[i].name+'  path '+arr[i].path+'   categoryName '+arr[i].categoryName))
 
          var arr = JSON.parse(req.body.data);
         //
         for(var i in arr)
         {
 
-            const position = await Position.findOne({ where: { name: arr[i].name} });
+            const position = await Position.findOne({ where: {
+                category: arr[i].category,
+                name: arr[i].name,
+                path:arr[i].path
+            } });
 
             if (position === null) {
-                console.log('new pozic '+arr[i].category)
-                await Position.create({name:arr[i].name,squ:arr[i].name,imageSrc:arr[i].imageSrc,category: arr[i].category,user:req.user.id})
+                // console.log('new pozic '+arr[i].category)
+                await Position.create({name:arr[i].name,squ:getFirstPart(arr[i].name),imageSrc:arr[i].imageSrc,
+                    path:arr[i].path,category: arr[i].category,categoryName:arr[i].categoryName, user:req.user.id})
+                console.log('2222222 arr '+String(arr[i].name+'  path '+arr[i].path+'   categoryName '+arr[i].categoryName))
             } else {
                 // await Position.update({name:arr[i].name,squ:arr[i].name,imageSrc:arr[i].imageSrc,category: arr[i].category,user:req.user.id})
                 //
@@ -70,6 +88,11 @@ module.exports.create = async function(req, res) {
 //     }
 //
 // }
+
+function getFirstPart (str) {
+    let index = str.lastIndexOf('.');
+    return str.substring(0,index);
+}
 
 module.exports.update = async function(req, res) {
 

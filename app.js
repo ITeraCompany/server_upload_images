@@ -7,6 +7,7 @@ const analiticsRouters = require('./routers/analitics')
 const categoryRouters = require('./routers/category')
 const orderRouters = require('./routers/orders')
 const positionsRouters = require('./routers/positions')
+const getImages = require('./routers/getImages')
 const app = exp();
 
 app.use(passport.initialize())
@@ -22,6 +23,8 @@ app.use('/api/analitics/',analiticsRouters)
 app.use('/api/category/',categoryRouters)
 app.use('/api/order/',orderRouters)
 app.use('/api/position/',positionsRouters)
+
+app.use('/api/getImages/',getImages)
 
 
 if (process.env.NODE_ENV === 'production') {
