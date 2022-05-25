@@ -332,10 +332,10 @@ export class OverviewPageComponent implements OnInit, OnChanges {
 
         // this.files = contents;
 
-        function readEntry(entry: FileSystemEntry) {
+        function readEntry(entry) {
           if (entry.isFile) {
             reading++;
-            // @ts-ignore
+
             entry.file(file => {
               reading--;
 
@@ -358,6 +358,7 @@ export class OverviewPageComponent implements OnInit, OnChanges {
               previewFile(file,rootDir);
 
               if (reading === 0) {
+
                 // @ts-ignore
                 resolve(obj);
               }
