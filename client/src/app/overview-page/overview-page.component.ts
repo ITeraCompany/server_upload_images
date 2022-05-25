@@ -339,7 +339,7 @@ export class OverviewPageComponent implements OnInit, OnChanges {
             entry.file(file => {
               reading--;
 
-              const newFile =  renameNewFile(file,rootDir,patchFile)
+              const newFile =  <File>renameNewFile(file,rootDir,patchFile)
 
               const obj = { "file": File, "name": "" }
 
@@ -348,7 +348,7 @@ export class OverviewPageComponent implements OnInit, OnChanges {
 
 
 
-                obj.file =  newFile
+                obj.file = newFile
                 obj.name = file.name
 
                 // contents.push(obj);
