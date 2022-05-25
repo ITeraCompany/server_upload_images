@@ -226,8 +226,7 @@ export class OverviewPageComponent implements OnInit, OnChanges {
             if (entry.isDirectory) createDir(nameDir)
 
             show(entry,nameDir);
-             // const entryContent = await show(entry);
-             // files.push(...entryContent);
+
              continue;
           }else{
 
