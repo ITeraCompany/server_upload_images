@@ -270,16 +270,16 @@ export class OverviewPageComponent implements OnInit, OnChanges {
           {
             if (filterFile(newfiles.name)){
 
-              await readEntryContentAsync(newfiles,entry.fullPath,rootDir).then(contents => {
+              await readEntryContentAsync(newfiles,entry.fullPath,rootDir).then(file => {
 
-                files.push(contents.file)
+                files.push(file)
 
                 const newPosition: Position = {
-                  name: contents.name,
+                  name: file.name,
                   path: entry.fullPath,
                   category: rootDir,
                   categoryName:rootDir,
-                  imageSrc: document.location.origin+'/uploads/'+contents.file.name
+                  imageSrc: document.location.origin+'/uploads/'+file.name
                 }
 
                 newPositions.push(newPosition)
@@ -325,7 +325,7 @@ export class OverviewPageComponent implements OnInit, OnChanges {
 
     async function readEntryContentAsync(entry: FileSystemEntry,patchFile,rootDir) {
 
-      return new Promise<{ "file": File, "name": "" }>((resolve, reject) => {
+      return new Promise<File>((resolve, reject) => {
         let reading = 0;
 
         readEntry(entry);
@@ -341,15 +341,15 @@ export class OverviewPageComponent implements OnInit, OnChanges {
 
               const newFile =  <File>renameNewFile(file,rootDir,patchFile)
 
-              const obj = { "file": File, "name": "" }
+//               const obj = { "file": File, "name": "" }
 
               if (file) {
                // contents.push(newFile);
 
 
 
-                obj.file = newFile
-                obj.name = file.name
+//                 obj.file = newFile
+//                 obj.name = file.name
 
                 // contents.push(obj);
 
@@ -359,8 +359,8 @@ export class OverviewPageComponent implements OnInit, OnChanges {
 
               if (reading === 0) {
 
-                // @ts-ignore
-                resolve(obj);
+                
+                resolve(newFile);
               }
             });
           }
