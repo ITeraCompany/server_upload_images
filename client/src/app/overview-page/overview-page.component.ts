@@ -307,7 +307,7 @@ export class OverviewPageComponent implements OnInit, OnChanges {
     }
 
     function newNameFile(rootDir,name) {
-     return  normalizeName(rootDir)+'---'+normalizeName(name)
+     return  normalizeName(rootDir)+'---№'+normalizeName(name)
     }
 
     function renameNewFile(file,rootDir,patchFile){
