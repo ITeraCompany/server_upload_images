@@ -30,7 +30,7 @@ app.use('/api/getImages/',getImages)
 if (process.env.NODE_ENV === 'production') {
     app.use(exp.static('client/dist/client'))
 
-    app.get('*', (req, res) => {
+    app.get('/add', (req, res) => {
         res.sendFile(path.resolve(__dirname, 'client', 'dist', 'client', 'index.html'))
     })
 }
