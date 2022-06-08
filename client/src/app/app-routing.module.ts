@@ -9,7 +9,7 @@ import {AuthLayoutComponent} from "./shared/layouts/auth-layout/auth-layout.comp
 //
 // const routes: Routes = [
 //   {
-//     path: '', component: AuthLayoutComponent, children:[
+//     path: 'add', component: AuthLayoutComponent, children:[
 //       {path:'',redirectTo:'/login',pathMatch:'full'},
 //       {path:'login', component:LoginPageComponent},
 //       {path:'register', component:RegistrationPageComponent}
@@ -17,7 +17,7 @@ import {AuthLayoutComponent} from "./shared/layouts/auth-layout/auth-layout.comp
 //     ]
 //   },
 //   {
-//     path: '', component: SiteLayoutComponent, canActivate: [AuthGuard],children:[
+//     path: 'add', component: SiteLayoutComponent, canActivate: [AuthGuard],children:[
 //       {path: 'overview', component: OverviewPageComponent}
 //     ]
 //   }
